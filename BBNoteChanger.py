@@ -56,22 +56,18 @@ def modify_cfg_file(cfg_file_path):
             create_backup(cfg_file_path, backup_path)
 
             with open(cfg_file_path, 'r') as file:
-                lines = file.readlines()
+                content = file.read()
+
+            # Modify the content using string replace
+            content = content.replace('"input_type": 1,', '"input_type": 0,')
+            content = content.replace('"input_type": 2,', '"input_type": 0,')
+            content = content.replace('"input_type": 3,', '"input_type": 0,')
+            content = content.replace('"note_modifier": 0,', '"note_modifier": 1,')
+            content = content.replace('"note_modifier": 2,', '"note_modifier": 1,')
+            # Add more replacements if needed for other values of x
 
             with open(cfg_file_path, 'w') as file:
-                for line in lines:
-                    # Modify the line as needed
-                    if '"input_type":' in line:
-                        line = line.replace('"input_type": 1,', '"input_type": 0,')
-                        line = line.replace('"input_type": 2,', '"input_type": 0,')
-                        line = line.replace('"input_type": 3,', '"input_type": 0,')
-                        # Add more replacements if needed for other values of x
-                    elif '"note_modifier":' in line:
-                        line = line.replace('"note_modifier": 0,', '"note_modifier": 1,')
-                        line = line.replace('"note_modifier": 2,', '"note_modifier": 1,')
-                        # Add more replacements if needed for other values of x
-
-                    file.write(line)
+                file.write(content)
 
             result_label.config(text="File modified successfully!\nBackup created at: {}".format(backup_path))
         else:
@@ -92,22 +88,18 @@ def process_folders(parent_directory):
                 create_backup(cfg_file_path, backup_path)
 
                 with open(cfg_file_path, 'r') as file:
-                    lines = file.readlines()
+                    content = file.read()
+
+                # Modify the content using string replace
+                content = content.replace('"input_type": 1,', '"input_type": 0,')
+                content = content.replace('"input_type": 2,', '"input_type": 0,')
+                content = content.replace('"input_type": 3,', '"input_type": 0,')
+                content = content.replace('"note_modifier": 0,', '"note_modifier": 1,')
+                content = content.replace('"note_modifier": 2,', '"note_modifier": 1,')
+                # Add more replacements if needed for other values of x
 
                 with open(cfg_file_path, 'w') as file:
-                    for line in lines:
-                        # Modify the line as needed
-                        if '"input_type":' in line:
-                            line = line.replace('"input_type": 1,', '"input_type": 0,')
-                            line = line.replace('"input_type": 2,', '"input_type": 0,')
-                            line = line.replace('"input_type": 3,', '"input_type": 0,')
-                            # Add more replacements if needed for other values of x
-                        elif '"note_modifier":' in line:
-                            line = line.replace('"note_modifier": 0,', '"note_modifier": 1,')
-                            line = line.replace('"note_modifier": 2,', '"note_modifier": 1,')
-                            # Add more replacements if needed for other values of x
-
-                        file.write(line)
+                    file.write(content)
 
                 result_label.config(text="File modified successfully!\nBackup created at: {}".format(backup_path))
             else:
@@ -157,7 +149,7 @@ root = tk.Tk()
 root.title("CFG File Modifier")
 
 # Create and place widgets
-label_directory = tk.Label(root, text="Beat Banger Folder:")
+label_directory = tk.Label(root, text="Parent Directory:")
 label_directory.grid(row=0, column=0, pady=10)
 
 entry_directory = tk.Entry(root, width=40)
@@ -166,10 +158,10 @@ entry_directory.grid(row=0, column=1, pady=10)
 button_browse_directory = tk.Button(root, text="Browse", command=browse_directory)
 button_browse_directory.grid(row=0, column=2, pady=10)
 
-button_process_folders = tk.Button(root, text="Activate EZ Mode", command=process_folders_and_modify)
+button_process_folders = tk.Button(root, text="Process Folders", command=process_folders_and_modify)
 button_process_folders.grid(row=1, column=1, pady=10)
 
-button_undo = tk.Button(root, text="Restore regular notes", command=undo_process_folders)
+button_undo = tk.Button(root, text="Undo", command=undo_process_folders)
 button_undo.grid(row=2, column=1, pady=10)
 
 result_label = tk.Label(root, text="")
