@@ -45,6 +45,9 @@ def undo_process_folders_helper(parent_directory):
 
             undo_modify_cfg_file(cfg_file_path, backup_path)
 
+    # Resize the window after undoing folders
+    resize_window()
+
 def create_backup(cfg_file_path, backup_path):
     shutil.copy(cfg_file_path, backup_path)
 
@@ -71,7 +74,21 @@ def modify_cfg_file(cfg_file_path):
 
             result_label.config(text="File modified successfully!\nBackup created at: {}".format(backup_path))
         else:
-            result_label.config(text="Skipping folder. Backup already exists at: {}".format(backup_path))
+            with open(cfg_file_path, 'r') as file:
+                content = file.read()
+
+            # Modify the content using string replace
+            content = content.replace('"input_type": 1,', '"input_type": 0,')
+            content = content.replace('"input_type": 2,', '"input_type": 0,')
+            content = content.replace('"input_type": 3,', '"input_type": 0,')
+            content = content.replace('"note_modifier": 0,', '"note_modifier": 1,')
+            content = content.replace('"note_modifier": 2,', '"note_modifier": 1,')
+            # Add more replacements if needed for other values of x
+
+            with open(cfg_file_path, 'w') as file:
+                file.write(content)
+
+            result_label.config(text="Skipping folder. File modified at: {}".format(cfg_file_path))
 
     except FileNotFoundError:
         result_label.config(text="Error: File not found.")
@@ -84,26 +101,7 @@ def process_folders(parent_directory):
             cfg_file_path = os.path.join(root, 'notes.cfg')
             backup_path = os.path.join(root, 'notescopy.cfg')
 
-            if not os.path.exists(backup_path):
-                create_backup(cfg_file_path, backup_path)
-
-                with open(cfg_file_path, 'r') as file:
-                    content = file.read()
-
-                # Modify the content using string replace
-                content = content.replace('"input_type": 1,', '"input_type": 0,')
-                content = content.replace('"input_type": 2,', '"input_type": 0,')
-                content = content.replace('"input_type": 3,', '"input_type": 0,')
-                content = content.replace('"note_modifier": 0,', '"note_modifier": 1,')
-                content = content.replace('"note_modifier": 2,', '"note_modifier": 1,')
-                # Add more replacements if needed for other values of x
-
-                with open(cfg_file_path, 'w') as file:
-                    file.write(content)
-
-                result_label.config(text="File modified successfully!\nBackup created at: {}".format(backup_path))
-            else:
-                result_label.config(text="Skipping folder. Backup already exists at: {}".format(backup_path))
+            modify_cfg_file(cfg_file_path)
 
     # Resize the window after processing folders
     resize_window()
@@ -120,24 +118,6 @@ def process_folders_and_modify():
         process_folders(parent_directory)
     else:
         result_label.config(text="Please select a valid parent directory.")
-
-def undo_process_folders():
-    parent_directory = entry_directory.get()
-    if parent_directory:
-        undo_process_folders_helper(parent_directory)
-    else:
-        result_label.config(text="Please select a valid parent directory.")
-
-def undo_process_folders_helper(parent_directory):
-    for root, dirs, files in os.walk(parent_directory):
-        if 'notescopy.cfg' in files:
-            cfg_file_path = os.path.join(root, 'notes.cfg')
-            backup_path = os.path.join(root, 'notescopy.cfg')
-
-            undo_modify_cfg_file(cfg_file_path, backup_path)
-
-    # Resize the window after undoing folders
-    resize_window()
 
 # Function to resize the window
 def resize_window():
